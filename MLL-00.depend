@@ -1,7 +1,11 @@
 # depslib dependency file v1.0
-1765158432 source:d:\data yasmin\kuliah\semester 3\struktur data\tubes-2\mll-00\mll-00.cpp
+1765574886 source:d:\data yasmin\kuliah\semester 3\struktur data\tubes-2\mll-00\mll-00.cpp
 	"MLL-00.h"
 
-1765133480 d:\data yasmin\kuliah\semester 3\struktur data\tubes-2\mll-00\mll-00.h
+1765575051 d:\data yasmin\kuliah\semester 3\struktur data\tubes-2\mll-00\mll-00.h
 	<iostream>
+
+1765574929 source:d:\data yasmin\kuliah\semester 3\struktur data\tubes-2\mll-00\main.cpp
+	<iostream>
+	"MLL-00.h"
 

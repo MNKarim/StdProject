@@ -1,228 +1,224 @@
 #include "MLL-00.h"
-void createListAnggota(ListAnggota &L) {
+
+void createListAnggota(ListAnggota &L){
     L.first = nullptr;
 }
 
-void createListAktivitas(ListAktivitas &L) {
-    L.first = nullptr;
+bool isEmptyAnggota(ListAnggota L){
+    return L.first == nullptr;
 }
 
-adrAnggota alokasiAnggota(string id, string nama, string email) {
-    adrAnggota P = new Anggota;
-    P->idAnggota = id;
-    P->namaAnggota = nama;
-    P->email = email;
-    P->firstAktivitas = nullptr;
-    P->next = nullptr;
-    return P;
+bool isEmptyAktivitas(adrAnggota p){
+    return p->firstAktivitas == nullptr;
 }
 
-adrAktivitas alokasiAktivitas(string id, string nama, string jenis) {
-    adrAktivitas P = new Aktivitas;
-    P->idAktivitas = id;
-    P->namaAktivitas = nama;
-    P->jenisAktivitas = jenis;
-    P->next = nullptr;
-    return P;
+adrAnggota createElmAnggota(string id, string nama){
+    adrAnggota p = new elmAnggota;
+    p->info.id = id;
+    p->info.nama = nama;
+    p->next = nullptr;
+    p->firstAktivitas = nullptr;
+    return p;
 }
 
-adrRelasi alokasiRelasi(adrAktivitas A) {
-    adrRelasi R = new Relasi;
-    R->infoAktivitas = A;
-    R->next = nullptr;
-    return R;
+adrAktivitas createElmAktivitas(string kode, string namaAktivitas, string jenis){
+    adrAktivitas p = new elmAktivitas;
+    p->info.kode = kode;
+    p->info.namaAktivitas = namaAktivitas;  // ✅ konsisten
+    p->info.jenis = jenis;
+    p->next = nullptr;
+    return p;
 }
 
-void insertAnggota(ListAnggota &L, adrAnggota P) {
-    if (L.first == nullptr) {
-        L.first = P;
-    } else {
-        adrAnggota Q = L.first;
-        while (Q->next != nullptr) {
-            Q = Q->next;
+void addAnggota(ListAnggota &L, adrAnggota p){
+    if(isEmptyAnggota(L)){
+        L.first = p;
+    }else{
+        adrAnggota q = L.first;
+        while(q->next != nullptr){
+            q = q->next;
         }
-        Q->next = P;
+        q->next = p;
     }
 }
 
-void insertAktivitas(ListAktivitas &L, adrAktivitas P) {
-    if (L.first == nullptr) {
-        L.first = P;
-    } else {
-        adrAktivitas Q = L.first;
-        while (Q->next != nullptr) {
-            Q = Q->next;
-        }
-        Q->next = P;
-    }
+void addAktivitasKeAnggotaTertentu(adrAnggota &p, adrAktivitas q){
+    // Insert di awal (prepend)
+    q->next = p->firstAktivitas;
+    p->firstAktivitas = q;
 }
 
-adrAnggota cariAnggota(ListAnggota L, string id) {
-    adrAnggota P = L.first;
-    while (P != nullptr) {
-        if (P->idAnggota == id) {
-            return P;
+adrAnggota searchAnggota(ListAnggota L, string id){
+    adrAnggota p = L.first;
+    while(p != nullptr){
+        if(p->info.id == id){
+            return p;
         }
-        P = P->next;
+        p = p->next;
     }
     return nullptr;
 }
 
-adrAktivitas cariAktivitas(ListAktivitas L, string id) {
-    adrAktivitas P = L.first;
-    while (P != nullptr) {
-        if (P->idAktivitas == id) {
-            return P;
+adrAktivitas searchAktivitasDariAnggota(adrAnggota p, string kode){
+    if(p == nullptr) return nullptr;
+
+    adrAktivitas q = p->firstAktivitas;
+    while(q != nullptr){
+        if(q->info.kode == kode){
+            return q;
         }
-        P = P->next;
+        q = q->next;
     }
     return nullptr;
 }
 
-void tambahAktivitasPadaAnggota(adrAnggota A, adrAktivitas Akt) {
-    adrRelasi R = alokasiRelasi(Akt);
-
-    if (A->firstAktivitas == nullptr) {
-        A->firstAktivitas = R;
-    } else {
-        adrRelasi Q = A->firstAktivitas;
-        while (Q->next != nullptr) {
-            Q = Q->next;
-        }
-        Q->next = R;
-    }
-}
-
-void tampilkanSemuaAnggota(ListAnggota L) {
-    cout << "\n========================================\n";
-    cout << "       DAFTAR SEMUA ANGGOTA\n";
-    cout << "========================================\n";
-
-    if (L.first == nullptr) {
-        cout << "Belum ada anggota terdaftar.\n";
+void addAktivitasKeSemuaAnggota(ListAnggota &L, string namaAktivitas, string kodeAktivitas, string jenis){
+    if(isEmptyAnggota(L)){
+        cout << "Tidak ada anggota dalam list!\n";
         return;
     }
 
-    adrAnggota P = L.first;
-    int no = 1;
-    while (P != nullptr) {
-        cout << no++ << ". ID: " << P->idAnggota << "\n";
-        cout << "   Nama: " << P->namaAnggota << "\n";
-        cout << "   Email: " << P->email << "\n";
+    adrAnggota p = L.first;
+    int counter = 0;
 
-        int count = 0;
-        adrRelasi R = P->firstAktivitas;
-        while (R != nullptr) {
-            count++;
-            R = R->next;
-        }
-        cout << "   Jumlah Aktivitas: " << count << "\n";
-        cout << "----------------------------------------\n";
-
-        P = P->next;
+    while(p != nullptr){
+        // ✅ Buat elemen baru dengan 3 parameter
+        adrAktivitas q = createElmAktivitas(kodeAktivitas, namaAktivitas, jenis);
+        addAktivitasKeAnggotaTertentu(p, q);
+        counter++;
+        p = p->next;
     }
+
+    cout << "Aktivitas \"" << namaAktivitas << "\" berhasil ditambahkan ke "
+         << counter << " anggota.\n";
 }
 
-void tampilkanSemuaAktivitas(ListAktivitas L) {
-    cout << "\n========================================\n";
-    cout << "       DAFTAR SEMUA AKTIVITAS\n";
-    cout << "========================================\n";
-
-    if (L.first == nullptr) {
-        cout << "Belum ada aktivitas terdaftar.\n";
+void tampilkanSemuaAnggota(ListAnggota L){
+    if(isEmptyAnggota(L)){
+        cout << "\n=== DAFTAR ANGGOTA ===\n";
+        cout << "Belum ada anggota yang terdaftar.\n";
         return;
     }
 
-    adrAktivitas P = L.first;
-    int no = 1;
-    while (P != nullptr) {
-        cout << no++ << ". ID: " << P->idAktivitas << "\n";
-        cout << "   Nama: " << P->namaAktivitas << "\n";
-        cout << "   Jenis: " << P->jenisAktivitas << "\n";
-        cout << "----------------------------------------\n";
-        P = P->next;
-    }
-}
-
-void tampilkanAktivitasAnggota(adrAnggota A) {
     cout << "\n========================================\n";
-    cout << "  AKTIVITAS ANGGOTA: " << A->namaAnggota << "\n";
+    cout << "        DAFTAR SEMUA ANGGOTA\n";
     cout << "========================================\n";
 
-    if (A->firstAktivitas == nullptr) {
+    adrAnggota p = L.first;
+    int nomor = 1;
+
+    while(p != nullptr){
+        cout << nomor << ". ID: " << p->info.id << "\n";
+        cout << "   Nama: " << p->info.nama << "\n";
+
+        // Hitung jumlah aktivitas
+        int jumlahAktivitas = 0;
+        adrAktivitas q = p->firstAktivitas;
+        while(q != nullptr){
+            jumlahAktivitas++;
+            q = q->next;
+        }
+
+        cout << "   Jumlah Aktivitas: " << jumlahAktivitas << "\n";
+        cout << "----------------------------------------\n";
+
+        nomor++;
+        p = p->next;
+    }
+
+    cout << "Total Anggota: " << (nomor - 1) << "\n";
+    cout << "========================================\n";
+}
+
+void tampilkanAktivitasAnggota(adrAnggota A){
+    if(A == nullptr){
+        cout << "Anggota tidak valid!\n";
+        return;
+    }
+
+    cout << "\n========================================\n";
+    cout << "   AKTIVITAS ANGGOTA\n";
+    cout << "========================================\n";
+    cout << "ID: " << A->info.id << "\n";
+    cout << "Nama: " << A->info.nama << "\n";
+    cout << "----------------------------------------\n";
+
+    if(isEmptyAktivitas(A)){
         cout << "Anggota ini belum mengikuti aktivitas apapun.\n";
-        return;
+    } else {
+        adrAktivitas q = A->firstAktivitas;
+        int nomor = 1;
+
+        while(q != nullptr){
+            cout << nomor << ". Kode: " << q->info.kode << "\n";
+            cout << "   Nama: " << q->info.namaAktivitas << "\n";
+            cout << "   Jenis: " << q->info.jenis << "\n";
+            cout << "   ------------------------------------\n";
+
+            nomor++;
+            q = q->next;
+        }
+
+        cout << "Total Aktivitas: " << (nomor - 1) << "\n";
     }
 
-    adrRelasi R = A->firstAktivitas;
-    int no = 1;
-    while (R != nullptr) {
-        cout << no++ << ". " << R->infoAktivitas->namaAktivitas << "\n";
-        cout << "   Jenis: " << R->infoAktivitas->jenisAktivitas << "\n";
-        cout << "   ID: " << R->infoAktivitas->idAktivitas << "\n";
-        cout << "----------------------------------------\n";
-        R = R->next;
-    }
+    cout << "========================================\n";
 }
 
-void tampilkanAnggotaPalingAktif(ListAnggota L) {
-    if (L.first == nullptr) {
-        cout << "\nBelum ada anggota terdaftar.\n";
+void tampilkanAnggotaPalingAktif(ListAnggota L){
+    if(isEmptyAnggota(L)){
+        cout << "\n=== ANGGOTA PALING AKTIF ===\n";
+        cout << "Belum ada anggota yang terdaftar.\n";
         return;
     }
 
-    adrAnggota palingAktif = L.first;
+    cout << "\n========================================\n";
+    cout << "      ANGGOTA PALING AKTIF\n";
+    cout << "========================================\n";
+
+    adrAnggota p = L.first;
+    adrAnggota palingAktif = nullptr;
     int maxAktivitas = 0;
 
-    adrAnggota P = L.first;
-    while (P != nullptr) {
-        int count = 0;
-        adrRelasi R = P->firstAktivitas;
-        while (R != nullptr) {
-            count++;
-            R = R->next;
+    // Cari anggota dengan aktivitas terbanyak
+    while(p != nullptr){
+        int jumlahAktivitas = 0;
+        adrAktivitas q = p->firstAktivitas;
+
+        while(q != nullptr){
+            jumlahAktivitas++;
+            q = q->next;
         }
 
-        if (count > maxAktivitas) {
-            maxAktivitas = count;
-            palingAktif = P;
+        if(jumlahAktivitas > maxAktivitas){
+            maxAktivitas = jumlahAktivitas;
+            palingAktif = p;
         }
 
-        P = P->next;
+        p = p->next;
     }
 
-    cout << "\n========================================\n";
-    cout << "       ANGGOTA PALING AKTIF\n";
+    if(palingAktif == nullptr || maxAktivitas == 0){
+        cout << "Belum ada anggota yang mengikuti aktivitas.\n";
+    } else {
+        cout << "ID: " << palingAktif->info.id << "\n";
+        cout << "Nama: " << palingAktif->info.nama << "\n";
+        cout << "Jumlah Aktivitas: " << maxAktivitas << "\n";
+        cout << "----------------------------------------\n";
+        cout << "Daftar Aktivitas:\n";
+
+        adrAktivitas q = palingAktif->firstAktivitas;
+        int nomor = 1;
+
+        while(q != nullptr){
+            cout << "  " << nomor << ". " << q->info.namaAktivitas
+                 << " (" << q->info.jenis << ")\n";
+            nomor++;
+            q = q->next;
+        }
+    }
+
     cout << "========================================\n";
-    cout << "Nama: " << palingAktif->namaAnggota << "\n";
-    cout << "ID: " << palingAktif->idAnggota << "\n";
-    cout << "Jumlah Aktivitas: " << maxAktivitas << "\n";
-}
-
-void tampilkanRingkasan(ListAnggota L) {
-    cout << "\n========================================\n";
-    cout << "    RINGKASAN AKTIVITAS PER ANGGOTA\n";
-    cout << "========================================\n";
-
-    if (L.first == nullptr) {
-        cout << "Belum ada anggota terdaftar.\n";
-        return;
-    }
-
-    adrAnggota P = L.first;
-    while (P != nullptr) {
-        int count = 0;
-        adrRelasi R = P->firstAktivitas;
-        while (R != nullptr) {
-            count++;
-            R = R->next;
-        }
-
-        cout << P->namaAnggota << " (" << P->idAnggota << "): "
-             << count << " aktivitas\n";
-
-        P = P->next;
-    }
 }
 
 void tampilkanMenu() {
@@ -230,14 +226,12 @@ void tampilkanMenu() {
     cout << "   SISTEM DATA ANGGOTA KOMUNITAS\n";
     cout << "========================================\n";
     cout << "1. Tambah Anggota\n";
-    cout << "2. Tambah Aktivitas\n";
-    cout << "3. Cari Anggota\n";
-    cout << "4. Tambahkan Aktivitas pada Anggota\n";
+    cout << "2. Cari Anggota\n";
+    cout << "3. Tambah Aktivitas pada Anggota Tertentu\n";
+    cout << "4. Tambah Aktivitas ke Semua Anggota\n";
     cout << "5. Tampilkan Aktivitas Anggota Tertentu\n";
     cout << "6. Tampilkan Semua Anggota\n";
-    cout << "7. Tampilkan Semua Aktivitas\n";
-    cout << "8. Tampilkan Ringkasan\n";
-    cout << "9. Tampilkan Anggota Paling Aktif\n";
+    cout << "7. Tampilkan Anggota Paling Aktif\n";
     cout << "0. Keluar\n";
     cout << "========================================\n";
     cout << "Pilihan: ";

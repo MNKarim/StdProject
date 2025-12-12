@@ -1,69 +1,61 @@
-#ifndef MLL-00_H_INCLUDED
-#define MLL-00_H_INCLUDED
+#ifndef MLL_00_H_INCLUDED
+#define MLL_00_H_INCLUDED
 #include <iostream>
 using namespace std;
-typedef struct Aktivitas *adrAktivitas;
-typedef struct Relasi *adrRelasi;
-typedef struct Anggota *adrAnggota;
 
-struct Aktivitas {
-    string idAktivitas;
-    string namaAktivitas;
-    string jenisAktivitas;
-    adrAktivitas next;
-};
-
-struct Relasi {
-    adrAktivitas infoAktivitas;
-    adrRelasi next;
-};
+typedef struct elmAnggota *adrAnggota;
+typedef struct elmAktivitas *adrAktivitas;
 
 struct Anggota {
-    string idAnggota;
-    string namaAnggota;
-    string email;
-    adrRelasi firstAktivitas;
+    string id;
+    string nama;
+};
+
+struct Aktivitas {
+    string kode;
+    string namaAktivitas;  // konsisten dengan ini
+    string jenis;
+};
+
+struct elmAnggota {
+    Anggota info;
     adrAnggota next;
+    adrAktivitas firstAktivitas;
+};
+
+struct elmAktivitas {
+    Aktivitas info;
+    adrAktivitas next;
 };
 
 struct ListAnggota {
     adrAnggota first;
 };
 
-struct ListAktivitas {
-    adrAktivitas first;
-};
-
-// ==================== DEKLARASI FUNGSI & PROSEDUR ====================
-
-// Inisialisasi
+// Operasi dasar
 void createListAnggota(ListAnggota &L);
-void createListAktivitas(ListAktivitas &L);
+bool isEmptyAnggota(ListAnggota L);
+bool isEmptyAktivitas(adrAnggota p);
 
 // Alokasi
-adrAnggota alokasiAnggota(string id, string nama, string email);
-adrAktivitas alokasiAktivitas(string id, string nama, string jenis);
-adrRelasi alokasiRelasi(adrAktivitas A);
+adrAnggota createElmAnggota(string id, string nama);
+adrAktivitas createElmAktivitas(string kode, string namaAktivitas, string jenis);
 
-// Insert
-void insertAnggota(ListAnggota &L, adrAnggota P);
-void insertAktivitas(ListAktivitas &L, adrAktivitas P);
-void tambahAktivitasPadaAnggota(adrAnggota A, adrAktivitas Akt);
+// Insert/Add
+void addAnggota(ListAnggota &L, adrAnggota p);
+void addAktivitasKeAnggotaTertentu(adrAnggota &p, adrAktivitas q);
+void addAktivitasKeSemuaAnggota(ListAnggota &L, string namaAktivitas, string kodeAktivitas, string jenis);
 
 // Pencarian
-adrAnggota cariAnggota(ListAnggota L, string id);
-adrAktivitas cariAktivitas(ListAktivitas L, string id);
+adrAnggota searchAnggota(ListAnggota L, string id);
+adrAktivitas searchAktivitasDariAnggota(adrAnggota p, string kode);
 
 // Tampilan
 void tampilkanSemuaAnggota(ListAnggota L);
-void tampilkanSemuaAktivitas(ListAktivitas L);
 void tampilkanAktivitasAnggota(adrAnggota A);
-void tampilkanRingkasan(ListAnggota L);
 void tampilkanAnggotaPalingAktif(ListAnggota L);
 
 // Menu
 void tampilkanMenu();
 
-
-
-#endif // MLL-00_H_INCLUDED
+#endif // MLL_00_H_INCLUDED

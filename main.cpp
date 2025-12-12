@@ -4,92 +4,88 @@ using namespace std;
 
 int main() {
     ListAnggota LA;
-    ListAktivitas LAk;
     createListAnggota(LA);
-    createListAktivitas(LAk);
 
     int pilihan;
-    string id, nama, email, jenis, idAnggota, idAktivitas;
+    string id, nama, jenis, kode, namaAktivitas;
 
     tampilkanMenu();
     cin >> pilihan;
-    while(pilihan != 0){
 
+    while(pilihan != 0){
         switch(pilihan) {
             case 1: {
                 cout << "\n--- TAMBAH ANGGOTA ---\n";
                 cout << "ID Anggota: ";
-                cin>>id;
+                cin >> id;
+                cin.ignore();  // ✅ Penting untuk getline
                 cout << "Nama Anggota: ";
-                cin>>nama;
-                cout << "Email: ";
-                cin>>email;
+                getline(cin, nama);
 
-                adrAnggota P = alokasiAnggota(id, nama, email);
-                insertAnggota(LA, P);
+                adrAnggota P = createElmAnggota(id, nama);  // ✅ Fungsi yang benar
+                addAnggota(LA, P);
                 cout << "Anggota berhasil ditambahkan!\n";
                 break;
             }
-
             case 2: {
-                cout << "\n--- TAMBAH AKTIVITAS ---\n";
-                cout << "ID Aktivitas: ";
-                cin>>id;
-                cout << "Nama Aktivitas: ";
-                cin>>nama;
-                cout << "Jenis (seminar/workshop/pertandingan): ";
-                cin>>jenis;
-
-                adrAktivitas P = alokasiAktivitas(id, nama, jenis);
-                insertAktivitas(LAk, P);
-                cout << "Aktivitas berhasil ditambahkan!\n";
-                break;
-            }
-
-            case 3: {
                 cout << "\n--- CARI ANGGOTA ---\n";
                 cout << "ID Anggota: ";
-                cin>>id;
+                cin >> id;
 
-                adrAnggota A = cariAnggota(LA, id);
+                adrAnggota A = searchAnggota(LA, id);  // ✅ Nama fungsi yang benar
                 if (A != nullptr) {
                     cout << "\nAnggota ditemukan!\n";
-                    cout << "ID: " << A->idAnggota << "\n";
-                    cout << "Nama: " << A->namaAnggota << "\n";
-                    cout << "Email: " << A->email << "\n";
+                    cout << "ID: " << A->info.id << "\n";
+                    cout << "Nama: " << A->info.nama << "\n";
                 } else {
                     cout << "Anggota tidak ditemukan!\n";
                 }
                 break;
             }
-
-            case 4: {
-                cout << "\n--- TAMBAH AKTIVITAS PADA ANGGOTA ---\n";
+            case 3: {
+                cout << "\n--- TAMBAH AKTIVITAS PADA ANGGOTA TERTENTU ---\n";
                 cout << "ID Anggota: ";
-                cin>>idAnggota;
-                cout << "ID Aktivitas: ";
-                cin>>idAktivitas;
+                cin >> id;
 
-                adrAnggota A = cariAnggota(LA, idAnggota);
-                adrAktivitas Akt = cariAktivitas(LAk, idAktivitas);
-
+                adrAnggota A = searchAnggota(LA, id);  // ✅ searchAnggota
                 if (A == nullptr) {
                     cout << "Anggota tidak ditemukan!\n";
-                } else if (Akt == nullptr) {
-                    cout << "Aktivitas tidak ditemukan!\n";
                 } else {
-                    tambahAktivitasPadaAnggota(A, Akt);
+                    cin.ignore();
+                    cout << "Kode Aktivitas: ";
+                    getline(cin, kode);
+                    cout << "Nama Aktivitas: ";
+                    getline(cin, namaAktivitas);
+                    cout << "Jenis (seminar/workshop/pertandingan): ";
+                    getline(cin, jenis);
+
+                    // ✅ Buat elemen aktivitas
+                    adrAktivitas q = createElmAktivitas(kode, namaAktivitas, jenis);
+                    // ✅ Tambahkan ke anggota
+                    addAktivitasKeAnggotaTertentu(A, q);
                     cout << "Aktivitas berhasil ditambahkan pada anggota!\n";
                 }
                 break;
             }
+            case 4: {
+                cout << "\n--- TAMBAH AKTIVITAS KE SEMUA ANGGOTA ---\n";
+                cin.ignore();
+                cout << "Kode Aktivitas: ";
+                getline(cin, kode);
+                cout << "Nama Aktivitas: ";
+                getline(cin, namaAktivitas);
+                cout << "Jenis (seminar/workshop/pertandingan): ";
+                getline(cin, jenis);
 
+                addAktivitasKeSemuaAnggota(LA, namaAktivitas, kode, jenis);
+                break;
+            }
             case 5: {
                 cout << "\n--- TAMPILKAN AKTIVITAS ANGGOTA ---\n";
                 cout << "ID Anggota: ";
-                cin>>id;
+                cin >> id;
 
-                adrAnggota A = cariAnggota(LA, id);
+                adrAnggota A = searchAnggota(LA, id);
                 if (A != nullptr) {
                     tampilkanAktivitasAnggota(A);
                 } else {
@@ -97,34 +93,24 @@ int main() {
                 }
                 break;
             }
-
             case 6:
                 tampilkanSemuaAnggota(LA);
                 break;
-
             case 7:
-                tampilkanSemuaAktivitas(LAk);
-                break;
-
-            case 8:
-                tampilkanRingkasan(LA);
-                break;
-
-            case 9:
                 tampilkanAnggotaPalingAktif(LA);
                 break;
-
             case 0:
                 cout << "\nTerima kasih telah menggunakan sistem!\n";
                 break;
-
             default:
                 cout << "\nPilihan tidak valid!\n";
         }
-        tampilkanMenu();
-        cin >> pilihan;
-}
 
+        if(pilihan != 0){
+            tampilkanMenu();
+            cin >> pilihan;
+        }
+    }
 
     return 0;
 }
