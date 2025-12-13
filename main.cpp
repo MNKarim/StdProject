@@ -18,11 +18,11 @@ int main() {
                 cout << "\n--- TAMBAH ANGGOTA ---\n";
                 cout << "ID Anggota: ";
                 cin >> id;
-                cin.ignore();  // ✅ Penting untuk getline
+                cin.ignore();
                 cout << "Nama Anggota: ";
                 getline(cin, nama);
 
-                adrAnggota P = createElmAnggota(id, nama);  // ✅ Fungsi yang benar
+                adrAnggota P = createElmAnggota(id, nama);
                 addAnggota(LA, P);
                 cout << "Anggota berhasil ditambahkan!\n";
                 break;
@@ -32,7 +32,7 @@ int main() {
                 cout << "ID Anggota: ";
                 cin >> id;
 
-                adrAnggota A = searchAnggota(LA, id);  // ✅ Nama fungsi yang benar
+                adrAnggota A = searchAnggota(LA, id);
                 if (A != nullptr) {
                     cout << "\nAnggota ditemukan!\n";
                     cout << "ID: " << A->info.id << "\n";
@@ -47,7 +47,7 @@ int main() {
                 cout << "ID Anggota: ";
                 cin >> id;
 
-                adrAnggota A = searchAnggota(LA, id);  // ✅ searchAnggota
+                adrAnggota A = searchAnggota(LA, id);
                 if (A == nullptr) {
                     cout << "Anggota tidak ditemukan!\n";
                 } else {
@@ -59,9 +59,7 @@ int main() {
                     cout << "Jenis (seminar/workshop/pertandingan): ";
                     getline(cin, jenis);
 
-                    // ✅ Buat elemen aktivitas
                     adrAktivitas q = createElmAktivitas(kode, namaAktivitas, jenis);
-                    // ✅ Tambahkan ke anggota
                     addAktivitasKeAnggotaTertentu(A, q);
                     cout << "Aktivitas berhasil ditambahkan pada anggota!\n";
                 }
@@ -99,6 +97,39 @@ int main() {
             case 7:
                 tampilkanAnggotaPalingAktif(LA);
                 break;
+            case 8: {
+                cout << "\n--- MENGHAPUS ANGGOTA DAN AKTIVITASNYA ---\n";
+                cout << "ID Anggota: ";
+                cin >> id;
+
+                adrAnggota A = searchAnggota(LA, id);
+                if(A != nullptr){
+                    delAnggotaAndAktivitas(LA, id);
+                }else{
+                    cout << "Anggota tidak ditemukan!\n";
+                }
+                break;
+            }
+            case 9: {
+                cout << "\n--- MENGHAPUS AKTIVITAS ANGGOTA TERTENTU ---\n";
+                cout << "ID Anggota: ";
+                cin >> id;
+                cout << "Kode Aktivitas: ";
+                cin >> kode;
+
+                adrAnggota A = searchAnggota(LA, id);
+                if(A != nullptr){
+                    adrAktivitas q = searchAktivitasDariAnggota(A, kode);
+                    if(q != nullptr){
+                        delAktivitasByAnggota(A, kode);
+                    }else{
+                        cout << "Aktivitas tidak ditemukan!\n";
+                    }
+                }else{
+                    cout << "Anggota tidak ditemukan!\n";
+                }
+                break;
+            }
             case 0:
                 cout << "\nTerima kasih telah menggunakan sistem!\n";
                 break;

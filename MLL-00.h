@@ -58,4 +58,12 @@ void tampilkanAnggotaPalingAktif(ListAnggota L);
 // Menu
 void tampilkanMenu();
 
+// Delete
+void delAnggotaAndAktivitas(ListAnggota &L, string id);
+void delAktivitasByAnggota(adrAnggota p, string kode);
+
+// Hitung Aktivitas Anggota
+int countAktivitasByAnggota(adrAnggota p);
+
+
 #endif // MLL_00_H_INCLUDED
